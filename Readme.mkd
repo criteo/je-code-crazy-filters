@@ -1,0 +1,270 @@
+# Crazy Insta Filters
+
+This program has been developed in the context of ["Aujourd'hui Je Code !"](http://labs.criteo.com/2018/01/aujourdhui-je-code-teaching-girls-code/), which was aimed at high school students and
+organized in the Criteo Paris Office. In its current form, it is aimed at french teenagers, so that exceptionally, the comments and documentation are written in French.
+
+
+## Introduction
+
+Ce programme a été développé dans le cadre de la journée ["Aujourd'hui Je Code !"](http://labs.criteo.com/2018/01/aujourdhui-je-code-teaching-girls-code/), à destination de lycéens francophones.
+Crazy Insta Filters est une interface logicielle permettant d'appliquer des filtres simples à des images. En modifiant quelques
+fonctions simples, mais pouvant être de plus en plus complexes, tu verras que tu peux faire beaucoup de choses avec du code Python.
+
+Le but à l'origine était de pouvoir arriver à programmer des filtres amusants, dans le style Instagram/Snapshat, en peu de temps mais en étant encadrées de près par
+des professionnels. Le code est mis à la disposition d'un plus large public sans
+pouvoir proposer le même suivi, mais n'hésite pas à poser tes questions en créant des tickets Github.
+
+
+### Approche de la programmation
+Sans aucune connaissance de base en programmation Python, il est recommandé d'avoir quelqu'un pour t'aider à comprendre ce qui se passe. Sinon,
+tu peux suivre un cours d'introduction aux bases de Python, par exemple [ici](https://zestedesavoir.com/tutoriels/799/apprendre-a-programmer-avec-python-3/)
+ ou [là](https://python.developpez.com/tutoriels/debuter-avec-python-au-lycee/).
+
+Ce cours propose de programmer des fonctions avancées en suivant des examples, en modifiant le code, avec des suites d'essais/erreurs. Change les valeurs,
+combine les fonctions, recopie et modifie les lignes de codes d'une fonction à l'autre, tout est permis !
+Il n'y a pas une seule façon de résoudre un exercice. Quelques idées de modifications sont données dans les commentaires
+du code, mais c'est à toi de décider de ce que tu veux réaliser.
+
+Tu n'apprendras pas seulement la programmation. Tu apprendras beaucoup sur les images numériques : comment elles sont
+représentées, et comment tu peux les modifier.
+
+## Comment installer ?
+
+Il faut installer Python 3.6 et quelques bibliothèques. Je te conseille d'utiliser [Anaconda](https://www.anaconda.com/download/#download) pour l'installer.
+Pour programmer, tu peux utiliser l'un des éditeurs suivant :
+
+- Spyder, qui est installé automatiquement avec Anaconda
+- [PyCharm](https://www.jetbrains.com/pycharm/download/download-thanks.html?platform=windows&code=PCC), édition "community", un éditeur gratuit avec de nombreuses fonctionalités. PyCharm fonctionne sous Windows comme sous Linux/MacOS.
+
+
+### Sous Windows
+
+Dans le menu démarrer, lancer "Anaconda command line", puis lancer successivement les commandes suivantes :
+
+    $ python -m pip install --upgrade pip wheel setuptools
+    $ conda install numpy=1.12.1 Pillow Cython
+    $ python -m pip install docutils pygments pypiwin32 kivy.deps.sdl2 kivy.deps.glew
+    $ python -m pip install opencv-python
+    $ python -m pip install kivy.deps.gstreamer
+    $ python -m pip install kivy.deps.angle
+    $ python -m pip install kivy
+
+
+
+### Sous MacOS
+
+Tu peux installer `Kivy` avec `Homebrew` et `pip` en effectuant les étapes suivantes :
+
+Commence par installer les dépendances avec Homebrew :
+
+    $ brew install pkg-config sdl2 sdl2_image sdl2_ttf sdl2_mixer gstreamer
+
+Puis install `Cython` and `Kivy` using `pip` :
+
+    $ pip install Cython==0.26.1
+    $ pip install kivy
+
+Si tu as des erreurs, il faut peut-être installer la version de développement de `Kivy`, la deuxième ligne de commande doit alors être remplacée par :
+
+    $ pip install https://github.com/kivy/kivy/archive/master.zip
+
+
+### Sous Linux
+
+Le programme a été testé sous Python 3.6. Tu peux créer un environnement spécifique avec Anaconda :
+
+    $ conda create -n jecode --file conda_reqs.txt
+    $ pip install -r requirements.txt
+    $ source activate jecode
+
+
+## Par où commencer ?
+
+Avec l'éditeur de code Python de ton choix, Spyder ou Pycharm, ouvre le fichier `main.py`. C'est le principal script
+Python du projet : exécute-le (trouve un bouton en forme de symbole "play"), attends quelques secondes, et une fenêtre
+doit s'afficher avec la caméra.
+
+    si tu as une erreur à ce moment-là, appelle à l'aide !
+    
+![Run for the first time](run_main.png)
+
+Si le programme a démarré correctement, tu peux jouer avec, cliquer sur les boutons, et voir ce qui se passe. Essaie
+les différents boutons en bas : ce sont des traitements d'images assez simples. Dans la partie suivante, tu pourras 
+modifier le code pour faire des calculs sur les pixels et créer tes propres transformations !
+
+Après chaque modification de code, il te faudra redémarrer le programme pour en tenir compte : repère le bouton restart dans PyCharm.
+
+![Restart!](restart.png)
+
+
+## Description du programme
+
+L'application *Crazy Insta Filters* est construite avec la librairie [Kivy](https://kivy.org/#home), une librairie Python qui
+permet de développer des interfaces multi-plateformes.
+
+Cela veut dire que pour faire tourner l'application, il y a un peu de *magie* :
+
+ - on peut simplement déclarer une liste de boutons, labels, etc. dans un fichier .kv, 
+et Kivy va créer ces objets pour nous.
+ - on peut récupérer les clics de souris, etc. sans trop de difficulté,
+ - on peut créer un certain nombre de widgets qui fonctionnent déjà (ouvrir un fichier...)
+
+Cela veut aussi dire qu'il a fallu écrire pas mal de code pour avoir les transformations *ET* les boutons pour les 
+appliquer ou les enlever, *ET* appliquer les mêmes transformations sur la webcam, et pouvoir charger des images, etc.
+Tu peux essayer de lire et comprendre le code mais :
+
+  1. ce n'est pas nécessaire pour pouvoir jouer avec et ajouter des nouvelles fonctions
+  2. c'est sûrement difficile à comprendre si tu n'as pas l'habitude des classes et de la programmation orientée
+  objet.
+  
+L'idée est donc d'aller modifier le code dans des endroits clés. Dans la plupart des fichiers, 
+il n'y a rien d'intéressant à modifier.
+La principale activité est de jouer avec les fonctions dans `transforms.py`, par exemple :
+
+    def invert_image(image_array):
+        image_array = 255 - image_array
+        return image_array
+        
+Tu as peut-être une petite idée de ce que fait cette fonction ? Même si tu n'y comprends rien , ne t'inquiète pas. 
+Tout est normal, lis la suite !
+
+Plus tard (pas tout de suite) :
+
+- il sera possible d'ajouter des bouton pour une nouvelle transformation dans `button_transforms.py`
+- tu pourras chercher là où il y a marqué "ESSAIE" dans le code et tenter de faire d'autres changements.
+- tu pourras passer des heures et des heures juste dans `transforms.py`
+
+
+## Introduction au traitement d'image
+
+Les transformations d'images sont définies dans le fichier `transforms.py`. Avant d'aller
+modifier le code, il faut comprendre comment une image est représentée pour la machine. Si la description ci-dessous
+te semble insuffisante, il y a un excellent article Wikipedia sur les [images numériques](https://fr.wikipedia.org/wiki/Image_num%C3%A9rique).
+
+Une image numérisée est divisée en _pixels_. Chaque pixel définit un point de couleur, comme un tout petit carré.
+Tu peux facilement observer la taille de l'image. Sa résolution est égale au nombre de pixels qu'elle contient. 
+Par exemple, pour une image 640x480, on aura 307200 pixels. On note la taille de l'image largeur x hauteur en
+nombre de pixels.
+
+Un pixel gris est un entier entre 0 et 255.
+Un pixel couleur est composé de 3 entiers R, G, B pour Red, Green, Blue.
+
+- Noir = 0, 0, 0
+- Blanc = 255, 255, 255
+    
+On peut aussi ajouter une quatrième valeur, appelée Alpha, pour définir le degré de transparence :
+
+- 0 = totalement transparent (donc invisible)
+- 255 = totalement opaque
+
+Pour te simplifier la vie, tu peux aller chercher les définitions des couleurs directement dans le programme, en cliquant sur le bouton
+"Couleur".
+
+![La palette de couleur RGB, A, HSV](choose_color.png)
+
+On appelle _canal_ une image avec des pixels représentés par un seul entier. Ainsi, tu peux te représenter la même image
+de deux façons :
+
+- un tableau de taille largeur x hauteur contenant des pixels de couleurs, chacun de taille 3 entiers,
+- trois tableaux de taille largeur x hauteur, chaque tableau représentant un canal.
+
+Dans ce module nous travaillons sur des images couleurs composées de 3 _canaux_ : Rouge , Vert, Bleu.
+
+
+Le module `numpy` permet de faire des calculs sur des tableaux sans avoir à écrire une double
+boucle `for` pour parcourir tous les pixels. Les premiers exercices servent à t'apprendre à manipuler ces tableaux.
+
+L'image suivante te montre comment tu peux trouver les valeurs des pixels. Le zoom te permet de visualiser les pixels : ce sont simplement
+des petits carrés de couleur. L'image en couleur est représentée par un tableau, presque toujours appelé `image_array` dans notre code. Le pixel en position `i,j`
+est de couleur bleue, représentée par les trois valeurs (R, G, B) = (89, 128, 197). Tu peux remarquer que pour faire ce bleu,
+on met beaucoup de vert et de bleu (128/255, 197/255), et moins de rouge.
+
+![comment accéder aux pixels en numpy](pixels.png)
+
+Tu peux modifier la couleur d'un seul pixel en y accédant par ses coordonnées `i,j`. `i=0, j=0` correspond au pixel
+dans le coin supérieur gauche de l'image. 
+Par exemple, `image_array[0, 0] = (255, 0, 0)` va colorier ce pixel en rouge.
+ 
+Tu peux modifier tout un canal, par exemple, pour mettre tout le canal rouge à 0 (ce qui est un peu comme retirer tout le 
+rouge de l'image), tu peux écrire `image_array[:, :, CANAL_ROUGE] = 0`. En python, `:` signifie que tu utilises toutes les valeurs possibles
+des coordonnées d'un tableau (de 0 à la hauteur pour `i`, de 0 à la largeur pour `j`). Les premiers exemples de code 
+te montrent tout ce que tu peux faire pour manipuler les pixels.
+
+Si tu veux en savoir plus : demande-nous, mais sinon Wikipedia te donnera tous les détails !
+
+Si tu as lu jusqu'ici, bravo ! Maintenant tu peux aller dans `transforms.py` et écrire tes premières lignes de code !
+
+
+## Pycharm, Python tips & tricks
+
+### Principes de programmation utiles
+
+Une _fonction_ est une suite d'instructions appliquée à ses paramètres d'entrée, pour renvoyer une valeur de sortie.
+C'est un peu comme une fonction mathématique, mais elle ne s'applique pas forcément à des nombres.
+
+Un _module_ python est défini par un fichier regroupant un ensemble de fonctions.
+
+Une _librairie_ (_library_) regroupe un ensemble de modules, de façon à pouvoir les utiliser dans n'importe quel programme.
+
+Dans `transforms.py`, il y a deux librairies importées :
+
+    import numpy as np
+    import cv2
+
+`numpy` correspond à la librairie [Numpy](http://www.numpy.org/) et contient des fonctions mathématiques,
+en particulier pour faire des opérations sur les tableaux.
+
+`cv2` correspond à la librairie [OpenCV](https://opencv.org/) et contient des fonctions de traitement d'images avancées.
+
+Quelques conseils, surtout si tu travailles tout seul :
+
+- Apprends l'anglais ;-)
+- Quand tu as une erreur, copie-la dans un moteur de recherche internet. Tu n'es sûrement pas le premier à la rencontrer !
+- Si tu as des questions de programmation, tu peux la poser sur [StackOverflow](https://stackoverflow.com/)
+- Si tu ne comprends pas une fonction : lis la documentation !
+
+
+### Raccourcis
+
+- Il ne faut pas hésiter à utiliser les copier-coller (`Ctrl-C`, `Ctrl-V`)... mais il faut savoir créer une fonction
+pour ne pas répéter toujours les mêmes lignes de code !
+- Auto-complétion : la touche `Tab`  permet d'auto-compléter un nom de fonction ou de variable qui est déjà défini.
+- Rechercher/Remplacer : `Ctrl-F`, `Ctrl-R`... mais il y a aussi `Ctrl-B`, dans PyCharm, qui te permet de te
+déplacer automatiquement sur la définition d'une fonction, lorsque le curseur se trouve sur l'endroit où la fonction
+est appelée.
+
+
+D'une façon générale, il est conseillé d'être curieux :
+ - explore l'éditeur, il contient une foule de petits outils destinés à te simplifier la vie,
+ - cherche à comprendre comment ça marche, pose des questions autour de toi,
+ - cherche des réponses sur internet et lis autant que tu peux !
+ 
+
+### Fonctions avancées de traitement d'images
+
+Le programme permet d'utiliser toutes les fonctions Python de la bibliothèque [OpenCV](https://docs.opencv.org/3.1.0/d6/d00/tutorial_py_root.html). Cela veut dire
+que tu peux utiliser la plupart de ces fonctions dans tes programmes. Tu trouveras quelques exemples d'utilisation de fonctions
+d'OpenCV dans le fichier `transforms.py`. Cherche ce qui commence par `cv2.`. Par exemple :
+
+- pour redimensionner une image, la fonction `resize` fait tout le travail :
+   
+    `resized_image = cv2.resize(image, (new_width, new_height))`
+    
+- pour dessiner un rectangle rouge, avec un trait d'épaisseur 2 pixels :
+
+    `cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)`
+    
+- pour dessiner des formes en reliant une liste de points (`contour_points`) :
+
+    `cv2.drawContours(new_im, [contour_points], 0, color, thickness)`
+
+
+## Mentions légales et credits
+
+La license du code est consultable dans le [fichier joint 'LICENSE.txt'](LICENSE.txt).
+
+Le [logo Criteo](crazy-filters/ui/logo.png) appartient exclusivement à Criteo et est protégé par les lois sur la propriété intellectuelle.
+
+Les autres images et éléments graphiques peuvent faire l'object de
+licenses et crédits spécifiques qui sont alors précisés dans un fichier
+CREDITS.txt présent à côtés de ces éléments.
