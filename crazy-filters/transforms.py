@@ -658,10 +658,37 @@ def face_overlay(img, overlay=None, relative_position=0.2, relative_width=1.):
 
 
 def carrousel_transfo(image_array, ticking=0):
+    """
+    Cette fonction permet de boucler sur une liste prédéfinie de fonctions.
+
+    :param image_array:
+    :param ticking: une liste de taille 1, dont l'élément compte le nombre de frames affichées depuis
+        le dernier clic sur le bouton.
+    :return: une image transformée
+    """
+
+    def draw_rect_horiz(im):
+        im[100:150, :, :] = 0
+        return im
+
+    def draw_rect_horiz2(im):
+        im[120:170, :, CANAL_VERT] = 0
+        return im
+
+    def draw_rect_vert(im):
+        im[:, 100:150, :] = 255
+        return im
+
+    def draw_rect_vert2(im):
+        im[:, 120:170, CANAL_VERT] = 255
+        return im
+
     available_transfos = (
         rouge,
-        horizontal_subimage,
-        vertical_subimage,
+        draw_rect_horiz,
+        draw_rect_horiz2,
+        draw_rect_vert,
+        draw_rect_vert2,
         subimage,
         niveaux_de_gris,
         invert_image,
@@ -673,8 +700,12 @@ def carrousel_transfo(image_array, ticking=0):
         contour,
         popart_one,
         popart,
+        face_overlay,
+        face_overlay,  # keep longer hack
+        glasses,
+        glasses,
         glasses,
     )
 
-    function_index = (ticking[0] // 15) % len(available_transfos)
+    function_index = (ticking[0] // 10) % len(available_transfos)
     return available_transfos[function_index](image_array)
