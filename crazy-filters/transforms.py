@@ -93,7 +93,7 @@ def subimage(image_array):
     """
     h = image_array.shape[0]
     w = image_array.shape[1]
-    image_array[(h - 110):(h - 100), 100:120, :] = 255, 0, 0
+    image_array[(h - 150):(h - 100), 100:(w-200), :] = 255, 0, 0
     return image_array
 
 
@@ -629,7 +629,7 @@ def glasses(img):
     return face_overlay(img, glass_image, relative_position=0.21)
 
 
-def face_overlay(img, overlay, relative_position=0.2, relative_width=1.):
+def face_overlay(img, overlay=None, relative_position=0.2, relative_width=1.):
     """
     Cette fonction utilise la fonction de détection de visages d'OpenCV
     et colle une image sur les visages détectés
@@ -647,11 +647,13 @@ def face_overlay(img, overlay, relative_position=0.2, relative_width=1.):
     for x, y, w, h in faces:
         # pour chaque visage, colle l'image un peu au-dessus du rectangle
         # tu peux afficher le rectangle en décommentant la ligne suivante
-        # cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
-        new_y = max(0, int(y + relative_position * h))
-        new_width = int(w * relative_width)
-        new_x = x - (new_width - w) // 2
-        paste_image(img, overlay, new_x, new_y, fit_width=new_width, make_transparent=(255, 255, 255))
+        if overlay is None:
+            cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
+        else:
+            new_y = max(0, int(y + relative_position * h))
+            new_width = int(w * relative_width)
+            new_x = x - (new_width - w) // 2
+            paste_image(img, overlay, new_x, new_y, fit_width=new_width, make_transparent=(255, 255, 255))
     return img
 
 
