@@ -70,13 +70,13 @@ class TextureTransformMixin:
         self.texwidth = 0
         self.texheight = 0
         self.texfmt = 'rgba'
-        self.transforms = []
+        self.transforms = {}
 
     def on_click_transform(self, transform_func, **kwargs):
-        if (transform_func, kwargs) in self.transforms:
-            self.transforms.remove((transform_func, kwargs))
+        if transform_func in self.transforms:
+            self.transforms.pop(transform_func)
         else:
-            self.transforms.append((transform_func, kwargs))
+            self.transforms[transform_func] = kwargs
         self.init_texture()
 
     def init_texture(self):
@@ -106,7 +106,9 @@ class TextureTransformMixin:
 
     def apply_all_transforms(self):
         buf = self.get_frame()
-        for image_transform, kwargs in self.transforms:
+        for image_transform, kwargs in self.transforms.items():
+            if 'ticking' in kwargs:
+                kwargs['ticking'][0] += 1
             if 'use_alpha' in kwargs:
                 buf = image_transform(buf, **kwargs).astype(np.uint8)
             else:
@@ -177,7 +179,6 @@ class ImageTransform(CutMixin, Image, TextureTransformMixin):
                               count=self.texwidth * self.texheight * len(self.texfmt))
         buf = frame.reshape(self.texheight, self.texwidth, len(self.texfmt))
         return buf
-
 
     def update_area(self, lines):
         # somehow contours are not in the right image reference

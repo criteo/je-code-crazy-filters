@@ -654,3 +654,25 @@ def face_overlay(img, overlay, relative_position=0.2, relative_width=1.):
         paste_image(img, overlay, new_x, new_y, fit_width=new_width, make_transparent=(255, 255, 255))
     return img
 
+
+def carrousel_transfo(image_array, ticking=0):
+    available_transfos = (
+        rouge,
+        horizontal_subimage,
+        vertical_subimage,
+        subimage,
+        niveaux_de_gris,
+        invert_image,
+        to_sepia,
+        repeat,
+        test_contours,
+        peephole_effect,
+        to_vintage,
+        contour,
+        popart_one,
+        popart,
+        glasses,
+    )
+
+    function_index = (ticking[0] // 15) % len(available_transfos)
+    return available_transfos[function_index](image_array)
