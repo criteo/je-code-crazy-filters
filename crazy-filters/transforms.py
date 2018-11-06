@@ -104,7 +104,9 @@ Ici on mélange les couleurs des différents canaux, et on transforme les pixels
 
 
 def niveaux_de_gris(image_array):
-    r, v, b = image_array
+    r = image_array[:, :, CANAL_ROUGE]
+    v = image_array[:, :, CANAL_VERT]
+    b = image_array[:, :, CANAL_BLEU]
     return r / 3. + v / 3. + b / 3.
 
 
