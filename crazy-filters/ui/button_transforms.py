@@ -13,6 +13,7 @@ from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 
 from ui.dialogs import ColorDialog
+
 import transforms as tf
 
 
@@ -30,8 +31,9 @@ class TransformerBehaviourMixin:
         self.tf_buttons = {}
         self.buttons = {}
         self.last_color = [1, 1, 1, 1]
+        self._tick = [0,]
 
-    def add_button(self, name, func, is_tf=True, is_toggle=True):
+    def add_button(self, name, func, is_tf=True, is_toggle=True, **kwargs):
         """
         Create buttons handling different options
         and attaching to the given function.
@@ -45,7 +47,7 @@ class TransformerBehaviourMixin:
         :param is_tf: True if the function is a direct image transform.
         """
         if is_tf:
-            self.tf_buttons[name] = func
+            self.tf_buttons[name] = (func, kwargs)
             btn = ToggleButton(text=name, on_press=self.on_click_transform)
         else:
             self.buttons[name] = func
@@ -60,8 +62,15 @@ class TransformerBehaviourMixin:
     def on_click_transform(self, instance):
         image = self.ids['image']
         button_type = instance.text
+
         if button_type in self.tf_buttons:
-            image.on_click_transform(self.tf_buttons[button_type])
+            if 'ticking' in self.tf_buttons[button_type][1]:
+
+                if instance.state != 'down':
+                    self._tick[0] = 0
+
+            image.on_click_transform(self.tf_buttons[button_type][0], **self.tf_buttons[button_type][1])
+
 
     def on_color_click(self, instance):
         if instance.state == 'down':
@@ -99,7 +108,7 @@ class CameraTransformerMixin(TransformerBehaviourMixin):
         # ESSAIE ! Ajouter les boutons pour la caméra ici
         self.add_button('Négatif', tf.invert_image)
         self.add_button('Sepia', tf.to_sepia)
-        self.add_button('Répéter', tf.repeat)
+        self.add_button('Carrousel', tf.carrousel_transfo, ticking=self._tick)
         self.add_button('Custom', tf.custom)
         self.add_button('Couleur', self.on_color_click, is_tf=False)
         self.add_button('Capture', self.capture, is_tf=False, is_toggle=False)

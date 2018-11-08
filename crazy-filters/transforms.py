@@ -93,7 +93,7 @@ def subimage(image_array):
     """
     h = image_array.shape[0]
     w = image_array.shape[1]
-    image_array[(h - 110):(h - 100), 100:120, :] = 255, 0, 0
+    image_array[(h - 150):(h - 100), 100:(w-200), :] = 255, 0, 0
     return image_array
 
 
@@ -104,7 +104,9 @@ Ici on mélange les couleurs des différents canaux, et on transforme les pixels
 
 
 def niveaux_de_gris(image_array):
-    r, v, b = image_array
+    r = image_array[:, :, CANAL_ROUGE]
+    v = image_array[:, :, CANAL_VERT]
+    b = image_array[:, :, CANAL_BLEU]
     return r / 3. + v / 3. + b / 3.
 
 
@@ -627,7 +629,7 @@ def glasses(img):
     return face_overlay(img, glass_image, relative_position=0.21)
 
 
-def face_overlay(img, overlay, relative_position=0.2, relative_width=1.):
+def face_overlay(img, overlay=None, relative_position=0.2, relative_width=1.):
     """
     Cette fonction utilise la fonction de détection de visages d'OpenCV
     et colle une image sur les visages détectés
@@ -645,10 +647,67 @@ def face_overlay(img, overlay, relative_position=0.2, relative_width=1.):
     for x, y, w, h in faces:
         # pour chaque visage, colle l'image un peu au-dessus du rectangle
         # tu peux afficher le rectangle en décommentant la ligne suivante
-        # cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
+        if overlay is None:
+            cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
+            continue
+
         new_y = max(0, int(y + relative_position * h))
         new_width = int(w * relative_width)
         new_x = x - (new_width - w) // 2
         paste_image(img, overlay, new_x, new_y, fit_width=new_width, make_transparent=(255, 255, 255))
+        
     return img
 
+
+def carrousel_transfo(image_array, ticking=0):
+    """
+    Cette fonction permet de boucler sur une liste prédéfinie de fonctions.
+
+    :param image_array:
+    :param ticking: une liste de taille 1, dont l'élément compte le nombre de frames affichées depuis
+        le dernier clic sur le bouton.
+    :return: une image transformée
+    """
+
+    def draw_rect_horiz(im):
+        im[100:150, :, :] = 0
+        return im
+
+    def draw_rect_horiz2(im):
+        im[120:170, :, CANAL_VERT] = 0
+        return im
+
+    def draw_rect_vert(im):
+        im[:, 100:150, :] = 255
+        return im
+
+    def draw_rect_vert2(im):
+        im[:, 120:170, CANAL_VERT] = 255
+        return im
+
+    available_transfos = (
+        rouge,
+        draw_rect_horiz,
+        draw_rect_horiz2,
+        draw_rect_vert,
+        draw_rect_vert2,
+        subimage,
+        niveaux_de_gris,
+        invert_image,
+        to_sepia,
+        repeat,
+        test_contours,
+        peephole_effect,
+        to_vintage,
+        contour,
+        popart_one,
+        popart,
+        face_overlay,
+        face_overlay,  # keep longer hack
+        glasses,
+        glasses,
+        glasses,
+    )
+
+    function_index = (ticking[0] // 10) % len(available_transfos)
+    return available_transfos[function_index](image_array)
