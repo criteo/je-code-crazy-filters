@@ -1,5 +1,5 @@
 """
-Dans ce module, vous trouverez des définitions de transformations d'images pixel à pixel.
+Dans ce module, tu trouveras des définitions de transformations d'images pixel à pixel.
 
 Il est recommandé de lire le Readme ou d'avoir une explication sur les images numériques
 avant de se lancer dans le code.
