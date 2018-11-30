@@ -25,7 +25,7 @@ class CrazyFiltersApp(App):
         self.widget_container = None
         # ESSAIE ! Paramètres modifiables ci-dessous
         self.widget_type = 'tab'  # essaie de changer ça :-)
-        self._use_pictures = False  # True: charge les images dans le dossier images. Sinon camera seule.
+        self._use_pictures = True  # True: charge les images dans le dossier images. Sinon camera seule.
         self._use_camera = True
 
     def open_image(self, filename):
@@ -76,7 +76,7 @@ class CrazyFiltersApp(App):
 
     def open_images_from_dir(self):
         curdir = dirname(__file__)
-        for filename in glob(join(curdir, 'images', '*')):
+        for filename in glob(join(curdir, '..', 'images', '*.[jpg][png]*')):
             try:
                 self.open_image(filename)
             except Exception as e:
