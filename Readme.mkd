@@ -1,7 +1,7 @@
 # Crazy Insta Filters
 
 This program has been developed in the context of ["Aujourd'hui Je Code !"](http://labs.criteo.com/2018/01/aujourdhui-je-code-teaching-girls-code/), which was aimed at high school students and
-organized in the Criteo Paris Office. In its current form, it is aimed at french teenagers, so that exceptionally, the comments and documentation are written in French.
+organized in the Criteo Paris Office. In its current form, it is aimed at french teenagers, so that exceptionally, the comments and documentation are written in French. You can check the wiki for [setup instructions](https://github.com/criteo/je-code-crazy-filters/wiki#setup).
 
 
 ## Introduction
