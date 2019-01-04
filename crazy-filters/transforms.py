@@ -556,6 +556,8 @@ def load_image(image_path, with_alpha=True, read_as_bgr=True):
     :return:
     """
     flag = -1 if with_alpha else 0
+    if os.path.dirname(__file__) != os.getcwd():
+        image_path = os.path.join(os.path.dirname(__file__), image_path)
     myim = cv2.imread(image_path, flag)
     if read_as_bgr:
         if myim.shape[2] == 4:
