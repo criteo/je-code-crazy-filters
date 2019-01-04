@@ -71,7 +71,6 @@ class TransformerBehaviourMixin:
 
             image.on_click_transform(self.tf_buttons[button_type][0], **self.tf_buttons[button_type][1])
 
-
     def on_color_click(self, instance):
         if instance.state == 'down':
             clr_picker = ColorDialog(select=self.on_color_transform,
@@ -92,6 +91,30 @@ class TransformerBehaviourMixin:
     def dismiss_color(self):
         self._popup.dismiss()
 
+    def capture(self, *args):
+        """
+        Exemple de fonction qui ne fonctionne que pour la caméra
+        et qui n'est pas une transformation d'image.
+        """
+        image = self.ids['image']
+        timestr = time.strftime("%Y%m%d_%H%M%S")
+        os.makedirs('captures', exist_ok=True)
+        img_path = "captures/{}_{}.png".format(self.text, timestr)
+        image.export_to_png(img_path)
+        popup = Popup(title='You just saved an image!',
+                      content=Label(text='it was saved to {}'.format(img_path)),
+                      size_hint=(None, None), size=(400, 200))
+        popup.open()
+
+    def add_capture_button(self):
+        self.add_button('Save', self.capture, is_tf=False, is_toggle=False)
+
+    def add_default_transfo_buttons(self):
+        self.add_button('Custom', tf.custom)
+        self.add_button('Invert', tf.invert_image)
+        self.add_button('Sepia', tf.to_sepia)
+        self.add_button('Colorize', self.on_color_click, is_tf=False)
+
 
 class CameraTransformerMixin(TransformerBehaviourMixin):
     """
@@ -106,28 +129,10 @@ class CameraTransformerMixin(TransformerBehaviourMixin):
 
     def build(self):
         # ESSAIE ! Ajouter les boutons pour la caméra ici
-        self.add_button('Négatif', tf.invert_image)
-        self.add_button('Sepia', tf.to_sepia)
+        self.add_default_transfo_buttons()
         self.add_button('Carrousel', tf.carrousel_transfo, ticking=self._tick)
-        self.add_button('Custom', tf.custom)
-        self.add_button('Couleur', self.on_color_click, is_tf=False)
-        self.add_button('Capture', self.capture, is_tf=False, is_toggle=False)
+        self.add_capture_button()
         self.source = self.ids['image']
-
-    def capture(self, *args):
-        """
-        Exemple de fonction qui ne fonctionne que pour la caméra
-        et qui n'est pas une transformation d'image.
-        """
-        camera = self.ids['image']
-        timestr = time.strftime("%Y%m%d_%H%M%S")
-        os.makedirs('captures', exist_ok=True)
-        img_path = "captures/IMG_{}.png".format(timestr)
-        camera.export_to_png(img_path)
-        popup = Popup(title='You just saved an image!',
-                      content=Label(text='it was saved to {}'.format(img_path)),
-                      size_hint=(None, None), size=(400, 200))
-        popup.open()
 
 
 class ImageTransformerMixin(TransformerBehaviourMixin):
@@ -145,12 +150,9 @@ class ImageTransformerMixin(TransformerBehaviourMixin):
 
     def build(self):
         # Ajouter les boutons pour les images fixes ici
-        self.add_button('Négatif', tf.invert_image)
-        self.add_button('Sepia', tf.to_sepia)
-        self.add_button('Répéter', tf.repeat)
-        self.add_button('Custom', tf.custom)
-        self.add_button('Cut', self.on_cut, is_tf=False)
-        self.add_button('Couleur', self.on_color_click, is_tf=False)
+        self.add_default_transfo_buttons()
+        self.add_button('Repeat', tf.repeat)
+        self.add_capture_button()
 
     def on_cut(self, *args):
         """
