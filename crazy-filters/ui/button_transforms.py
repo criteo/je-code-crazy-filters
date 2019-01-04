@@ -4,17 +4,15 @@ Rien de très intéressant à modifier ici. Va plutôt voir transforms.py.
 import os
 import time
 
-from kivy.properties import StringProperty
-from kivy.uix.tabbedpanel import TabbedPanelItem
-from kivy.uix.scatter import Scatter
-from kivy.uix.togglebutton import ToggleButton
-from kivy.uix.button import Button
-from kivy.uix.popup import Popup
-from kivy.uix.label import Label
-
-from ui.dialogs import ColorDialog
-
 import transforms as tf
+from kivy.properties import StringProperty
+from kivy.uix.button import Button
+from kivy.uix.label import Label
+from kivy.uix.popup import Popup
+from kivy.uix.scatter import Scatter
+from kivy.uix.tabbedpanel import TabbedPanelItem
+from kivy.uix.togglebutton import ToggleButton
+from ui.dialogs import ColorDialog
 
 
 class TransformerBehaviourMixin:
@@ -31,7 +29,7 @@ class TransformerBehaviourMixin:
         self.tf_buttons = {}
         self.buttons = {}
         self.last_color = [1, 1, 1, 1]
-        self._tick = [0,]
+        self._tick = [0, ]
 
     def add_button(self, name, func, is_tf=True, is_toggle=True, **kwargs):
         """

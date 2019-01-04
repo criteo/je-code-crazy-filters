@@ -93,7 +93,7 @@ def subimage(image_array):
     """
     h = image_array.shape[0]
     w = image_array.shape[1]
-    image_array[(h - 150):(h - 100), 100:(w-200), :] = 255, 0, 0
+    image_array[(h - 150):(h - 100), 100:(w - 200), :] = 255, 0, 0
     return image_array
 
 
@@ -327,8 +327,9 @@ def popart(image_array):
     hue_delta = 0
     for i in range(2):
         for j in range(2):
-            new_image[i * small_width:(i + 1) * small_width, j * small_height:(j + 1) * small_height, :] = popart_one(small_image,
-                                                                                                                      hue_delta)
+            new_image[i * small_width:(i + 1) * small_width, j * small_height:(j + 1) * small_height, :] = popart_one(
+                small_image,
+                hue_delta)
             hue_delta += 45
     return new_image
 
@@ -515,8 +516,8 @@ def draw_gaussian(height, width, spread_h, spread_w):
     La formule est celle d'une gaussienne, voir:
     https://fr.wikipedia.org/wiki/Fonction_gaussienne
     """
-    size_h = height/2
-    size_w = width/2
+    size_h = height / 2
+    size_w = width / 2
     coordinate_h, coordinate_w = np.mgrid[-size_h:size_h, -size_w:size_w]
     g = np.exp(-(coordinate_h ** 2 / float(spread_h) + coordinate_w ** 2 / float(spread_w)))
     normalized_g = g / g.max()
@@ -530,6 +531,7 @@ def peephole_effect(image_array):
     On simule ici le fait de regarder par un petit trou (de la porte par exemple).
     """
     return add_vignetting(image_array, 10, 10)
+
 
 """
 Utiliser la détection de visage d'OpenCV pour faire un filtre de type snapchat.
@@ -596,7 +598,7 @@ def paste_image(image_array,
         new_height = fit_height
         new_width = int(fit_height * image_to_paste.shape[1] / image_to_paste.shape[0])
 
-    old_image_patch = image_array[pos_y:pos_y+new_height, pos_x:pos_x+new_width, :]
+    old_image_patch = image_array[pos_y:pos_y + new_height, pos_x:pos_x + new_width, :]
     resized_image = cv2.resize(image_to_paste, (new_width, new_height))
     if resized_image.shape[2] == 4 and np.allclose(resized_image[:, :, 3].mean(), 255):  # il y a un canal alpha
         resized_image = resized_image[:, :, :3]
@@ -610,7 +612,7 @@ def paste_image(image_array,
         patch_to_paste = (1 - img_mask) * resized_image + img_mask * old_image_patch
     else:
         patch_to_paste = resized_image
-    image_array[pos_y:pos_y+new_height, pos_x:pos_x+new_width, :] = patch_to_paste
+    image_array[pos_y:pos_y + new_height, pos_x:pos_x + new_width, :] = patch_to_paste
     return image_array
 
 
@@ -640,9 +642,9 @@ def face_overlay(img, overlay=None, relative_position=0.2, relative_width=1.):
     :return: image avec les pixels modifiés
     """
     datadir = os.path.dirname(cv2.__file__)
-    face_cascade = cv2.CascadeClassifier(datadir+'/data/haarcascade_frontalface_default.xml')
+    face_cascade = cv2.CascadeClassifier(datadir + '/data/haarcascade_frontalface_default.xml')
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    img = img.astype(np.int32) # required to draw rectangle
+    img = img.astype(np.int32)  # required to draw rectangle
     # applique la fonction qui détecte tous les visages dans l'image
     # chaque "face" est un rectangle défini par la position du coin haut-gauche (x, y) et sa taille
     faces = face_cascade.detectMultiScale(gray, 1.3, 5)
@@ -657,7 +659,7 @@ def face_overlay(img, overlay=None, relative_position=0.2, relative_width=1.):
         new_width = int(w * relative_width)
         new_x = x - (new_width - w) // 2
         paste_image(img, overlay, new_x, new_y, fit_width=new_width, make_transparent=(255, 255, 255))
-        
+
     return img
 
 

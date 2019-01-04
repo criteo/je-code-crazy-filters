@@ -16,8 +16,6 @@ from ui.button_transforms import ScatterCamera, ScatterPicture, TabPicture, TabC
 from ui.dialogs import LoadDialog
 
 
-
-
 class CrazyFiltersApp(App):
     def __init__(self, **kwargs):
         super(CrazyFiltersApp, self).__init__(**kwargs)
