@@ -16,8 +16,6 @@ from ui.button_transforms import ScatterCamera, ScatterPicture, TabPicture, TabC
 from ui.dialogs import LoadDialog
 
 
-
-
 class CrazyFiltersApp(App):
     def __init__(self, **kwargs):
         super(CrazyFiltersApp, self).__init__(**kwargs)
@@ -25,7 +23,7 @@ class CrazyFiltersApp(App):
         self.widget_container = None
         # ESSAIE ! Paramètres modifiables ci-dessous
         self.widget_type = 'tab'  # essaie de changer ça :-)
-        self._use_pictures = False  # True: charge les images dans le dossier images. Sinon camera seule.
+        self._use_pictures = True  # True: charge les images dans le dossier images. Sinon camera seule.
         self._use_camera = True
 
     def open_image(self, filename):
@@ -41,7 +39,6 @@ class CrazyFiltersApp(App):
         self.widget_container.add_widget(pic)
         self.widget_container.switch_to(pic)
 
-
     def build(self):
         if self.widget_type == 'tab':
             self.widget_container = TabbedPanel(size_hint=(1, 0.9), do_default_tab=False)
@@ -52,31 +49,34 @@ class CrazyFiltersApp(App):
             self.build_scatter()
 
     def build_scatter(self):
-        # get any files into images directory
-        if self._use_pictures:
-            self.open_images_from_dir()
         if self._use_camera:
             try:
                 self._camera = ScatterCamera(rotation=randint(-20, 20))
                 self.widget_container.add_widget(self._camera)
             except AttributeError:
-                print("Warning: could not start Camera")
-
-    def build_tabs(self):
+                print("Warning: could not start Camera. Trying to load pictures.")
+                self._use_pictures = True
         # get any files into images directory
         if self._use_pictures:
             self.open_images_from_dir()
+
+    def build_tabs(self):
         if self._use_camera:
             try:
                 self._camera = TabCamera(text='Camera')
                 self.widget_container.add_widget(self._camera)
-            except AttributeError:
-                print("Warning: could not start Camera")
+            except kivy.lang.builder.BuilderException as e:
+                print("Warning: could not start Camera.  Trying to load pictures instead. "
+                      "Check that another app is not using your webcam.")
                 self._camera = None
+                self._use_pictures = True
+        # get any files into images directory
+        if self._use_pictures:
+            self.open_images_from_dir()
 
     def open_images_from_dir(self):
         curdir = dirname(__file__)
-        for filename in glob(join(curdir, 'images', '*')):
+        for filename in glob(join(curdir, '..', 'images', '*.[jpg][png]*')):
             try:
                 self.open_image(filename)
             except Exception as e:
