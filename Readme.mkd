@@ -30,6 +30,12 @@ représentées, et comment tu peux les modifier.
 
 ## Comment installer ?
 
+### Automatiquement
+Sous Windows, il suffit d'aller sur la [page "release"](https://github.com/criteo/je-code-crazy-filters/releases), de télécharger `crazy_filters_installer_win.exe` et de l'exécuter (si Windows envoie des avertissements, faites-nous confiance, c'est juste que le programme n'a pas été certifié).
+L'installeur crée un dossier avec tout ce qu'il faut : une distribution Python, et un éditeur pour modifier le programme, qui est démarré automatiquement avec la bonne configuration Python.
+
+### Manuellement
+
 Il faut installer Python 3.6 et quelques bibliothèques. Je te conseille d'utiliser [Anaconda](https://www.anaconda.com/download/#download) pour l'installer.
 Pour programmer, tu peux utiliser l'un des éditeurs suivant :
 
@@ -37,7 +43,7 @@ Pour programmer, tu peux utiliser l'un des éditeurs suivant :
 - [PyCharm](https://www.jetbrains.com/pycharm/download/download-thanks.html?platform=windows&code=PCC), édition "community", un éditeur gratuit avec de nombreuses fonctionalités. PyCharm fonctionne sous Windows comme sous Linux/MacOS.
 
 
-### Sous Windows
+#### Sous Windows
 
 Dans le menu démarrer, lancer "Anaconda command line", puis lancer successivement les commandes suivantes :
 
@@ -51,7 +57,7 @@ Dans le menu démarrer, lancer "Anaconda command line", puis lancer successiveme
 
 
 
-### Sous MacOS
+#### Sous MacOS
 
 Tu peux installer `Kivy` avec `Homebrew` et `pip` en effectuant les étapes suivantes :
 
@@ -69,7 +75,7 @@ Si tu as des erreurs, il faut peut-être installer la version de développement 
     $ pip install https://github.com/kivy/kivy/archive/master.zip
 
 
-### Sous Linux
+#### Sous Linux
 
 Le programme a été testé sous Python 3.6. Tu peux créer un environnement spécifique avec Anaconda :
 
@@ -80,7 +86,7 @@ Le programme a été testé sous Python 3.6. Tu peux créer un environnement sp�
 
 ## Par où commencer ?
 
-Avec l'éditeur de code Python de ton choix, Spyder ou Pycharm, ouvre le fichier `main.py`. C'est le principal script
+Avec l'éditeur de code Python de ton choix, Mu, Spyder ou Pycharm, ouvre le fichier `main.py`. C'est le principal script
 Python du projet : exécute-le (trouve un bouton en forme de symbole "play"), attends quelques secondes, et une fenêtre
 doit s'afficher avec la caméra.
 
