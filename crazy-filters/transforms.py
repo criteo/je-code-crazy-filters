@@ -40,17 +40,38 @@ de rectangles.
 """
 
 
+def get_image_height(image_array):
+    """
+    Cette fonction donne la hauteur (height) d'une image
+    :param image_array: image
+    :return: la hauteur de image_array
+    """
+    return image_array.shape[0]
+
+
+def get_image_width(image_array):
+    """
+    Cette fonction donne la largeur (width) d'une image
+    :param image_array: image
+    :return: le largeur de image_array
+    """
+    return image_array.shape[1]
+
+
 def rouge(image_array):
     """
     Pour faire du rouge, on garde seulement les couleurs du canal rouge (qui
-    correspond à l'index 0), et on met à 0 tous les pixels des canaux vert et bleu
-    (qui correspondent aux index 1 et 2);
-    pour les prendre tous les deux, on écrit 1:3 (= de 1 à 3 exclus).
+    correspond à l'index 0), et on met à 0 tous les pixels des canaux vert et bleu.
     :param image_array: image R, V, B
     :return: R, 0, 0
     """
-    image_array[:, :, CANAL_VERT] = 0
-    image_array[:, :, CANAL_BLEU] = 0
+
+    # h est la hauteur ('height') de l'image
+    h = get_image_height(image_array)
+    # w est la largeur ('width') de l'image
+    w = get_image_width(image_array)
+    image_array[0:h, 0:w, CANAL_VERT] = 0
+    image_array[0:h, 0:w, CANAL_BLEU] = 0
     return image_array
 
 
@@ -66,7 +87,8 @@ def horizontal_subimage(image_array):
      - est-ce que tu peux faire une bande sur la moitié de l'image ?
      - est-ce que tu peux faire la bande avec la couleur que tu veux ?
     """
-    image_array[0:10, :, :] = 0
+    w = get_image_width(image_array)
+    image_array[0:10, 0:w, CANAUX_RGB] = 0
     return image_array
 
 
@@ -76,9 +98,10 @@ def vertical_subimage(image_array):
     - les 10 colonnes de pixels qui sont sur le bord droit de l'image deviennent blanches
     - les colonnes numéro 10 à 19 deviennent blanches également
     """
-    h, w, c = image_array.shape
-    image_array[:, (w - 10):w, :] = 255
-    image_array[:, 10:20, :] = 255
+    h = get_image_height(image_array)
+    w = get_image_width(image_array)
+    image_array[0:h, (w - 10):w, CANAUX_RGB] = 255
+    image_array[0:h, 10:20, CANAUX_RGB] = 255
     return image_array
 
 
@@ -91,9 +114,9 @@ def subimage(image_array):
     de lancer la fonction ?
     Essaie d'autres positions en restant DANS l'image!
     """
-    h = image_array.shape[0]
-    w = image_array.shape[1]
-    image_array[(h - 150):(h - 100), 100:(w - 200), :] = 255, 0, 0
+    h = get_image_height(image_array)
+    w = get_image_width(image_array)
+    image_array[(h - 150):(h - 100), 100:(w - 200), CANAUX_RGB] = 255, 0, 0
     return image_array
 
 
@@ -104,9 +127,11 @@ Ici on mélange les couleurs des différents canaux, et on transforme les pixels
 
 
 def niveaux_de_gris(image_array):
-    r = image_array[:, :, CANAL_ROUGE]
-    v = image_array[:, :, CANAL_VERT]
-    b = image_array[:, :, CANAL_BLEU]
+    h = get_image_height(image_array)
+    w = get_image_width(image_array)
+    r = image_array[0:h, 0:w, CANAL_ROUGE]
+    v = image_array[0:h, 0:w, CANAL_VERT]
+    b = image_array[0:h, 0:w, CANAL_BLEU]
     return r / 3. + v / 3. + b / 3.
 
 
@@ -147,17 +172,20 @@ def to_sepia(image_array):
     :param image_array: image normale
     :return: image sepia
     """
-    inputRed = image_array[:, :, CANAL_ROUGE]
-    inputGreen = image_array[:, :, CANAL_VERT]
-    inputBlue = image_array[:, :, CANAL_BLEU]
+    h = get_image_height(image_array)
+    w = get_image_width(image_array)
+
+    inputRed = image_array[0:h, 0:w, CANAL_ROUGE]
+    inputGreen = image_array[0:h, 0:w, CANAL_VERT]
+    inputBlue = image_array[0:h, 0:w, CANAL_BLEU]
 
     outputRed = ((inputRed * .393) + (inputGreen * .769) + (inputBlue * .189)) / 1.351
     outputGreen = ((inputRed * .349) + (inputGreen * .686) + (inputBlue * .168)) / 1.351
     outputBlue = ((inputRed * .272) + (inputGreen * .534) + (inputBlue * .131)) / 1.351
 
-    image_array[:, :, CANAL_ROUGE] = outputRed
-    image_array[:, :, CANAL_VERT] = outputGreen
-    image_array[:, :, CANAL_BLEU] = outputBlue
+    image_array[0:h, 0:w, CANAL_ROUGE] = outputRed
+    image_array[0:h, 0:w, CANAL_VERT] = outputGreen
+    image_array[0:h, 0:w, CANAL_BLEU] = outputBlue
     truncate_bounds(image_array)
     return image_array
 
@@ -170,8 +198,10 @@ def colorize(image_array, color=(1, 1, 1, 1)):
     :param color: couleur du filtre à appliquer
     :return: image avec le filtre de la couleur
     """
+    h = get_image_height(image_array)
+    w = get_image_width(image_array)
     for canal in CANAUX_RGB:
-        image_array[:, :, canal] = image_array[:, :, canal] * color[canal]
+        image_array[0:h, 0:w, canal] = image_array[0:h, 0:w, canal] * color[canal]
     return image_array
 
 
@@ -188,10 +218,12 @@ def colorfun(image_array, color=(1, 1, 1, 1)):
     :param color: couleur à appliquer dans les zones claires
     :return: image colorisée
     """
+    h = get_image_height(image_array)
+    w = get_image_width(image_array)
     for c in range(3):
-        mi = image_array[:, :, c].mean()
-        high = image_array[:, :, c] >= mi
-        image_array[:, :, c][high] = color[c] * 255
+        mi = image_array[0:h, 0:w, c].mean()
+        high = image_array[0:h, 0:w, c] >= mi
+        image_array[0:h, 0:w, c][high] = color[c] * 255
     return image_array
 
 
@@ -213,13 +245,15 @@ def repeat(image_array, n_repeat=3):
     :param n_repeat: nombre de répétitions sur chaque côté
     :return: image dupliquée
     """
-    small_height = image_array.shape[0] // n_repeat
-    small_width = image_array.shape[1] // n_repeat
-    small_image = image_array[:small_height * n_repeat:n_repeat, :small_width * n_repeat:n_repeat, :]
+    h = get_image_height(image_array)
+    w = get_image_width(image_array)
+    small_height = h // n_repeat
+    small_width = w // n_repeat
+    small_image = image_array[0:small_height * n_repeat:n_repeat, 0:small_width * n_repeat:n_repeat, CANAUX_RGB]
     new_image = np.zeros(image_array.shape, dtype=image_array.dtype)
     for i in range(n_repeat):
         for j in range(n_repeat):
-            new_image[i * small_height:(i + 1) * small_height, j * small_width:(j + 1) * small_width, :] = small_image
+            new_image[i * small_height:(i + 1) * small_height, j * small_width:(j + 1) * small_width, CANAUX_RGB] = small_image
     return new_image
 
 
@@ -251,26 +285,27 @@ def contour(image_array):
 
     :return: les contours de l'image
     """
-    h = image_array.shape[0]
-    imy1 = image_array[0:h - 1, :, :] * 1.0
-    imy2 = image_array[1:h, :, :] * 1.0
+    h = get_image_height(image_array)
+    w = get_image_width(image_array)
 
-    w = image_array.shape[1]
-    imx1 = image_array[:, 0:w - 1, :].astype(np.float)
-    imx2 = image_array[:, 1:w, :] * 1.0
+    imy1 = image_array[0:h - 1, 0:w, CANAUX_RGB] * 1.0
+    imy2 = image_array[1:h, 0:w, CANAUX_RGB] * 1.0
 
-    # borders to black
+    imx1 = image_array[0:h, 0:w - 1, CANAUX_RGB].astype(np.float)
+    imx2 = image_array[0:h, 1:w, CANAUX_RGB] * 1.0
+
+    # bordures en noir
     dx = np.zeros(image_array.shape)
     dy = np.zeros(image_array.shape)
     # dy
-    dy[1:, :, :] = (imy2 - imy1)
+    dy[1:h, 0:w, CANAUX_RGB] = (imy2 - imy1)
     # dx
-    dx[:, 1:, :] = (imx1 - imx2)
+    dx[0:h, 1:w, CANAUX_RGB] = (imx1 - imx2)
     # une jolie formule pour les mélanger. dx^2 (au carré) s'écrirait dx ** 2 en Python,
     # mais c'est aussi simple d'écrire dx * dx.
     # np.sqrt = square root = racine carrée
     # (tiens ça ne te rappelerait pas Pythagore ?...)
-    image_array[:, :, :] = np.sqrt(dx * dx + dy * dy)
+    image_array[0:h, 0:w, CANAUX_RGB] = np.sqrt(dx * dx + dy * dy)
 
     return image_array
 
@@ -291,10 +326,12 @@ def posterisation(image_array):
 
     :return: une image avec moins de couleurs.
     """
+    h = get_image_height(image_array)
+    w = get_image_width(image_array)
     hsv_image = cv2.cvtColor(image_array, cv2.COLOR_RGB2HSV)
-    hsv_image[:, :, 0] = (hsv_image[:, :, 0] + 10.) // 20 * 20. + 10.
-    hsv_image[:, :, 1] = (hsv_image[:, :, 1] + 25.) // 50 * 50.
-    hsv_image[:, :, 2] = (hsv_image[:, :, 2] + 25.) // 50 * 50.
+    hsv_image[0:h, 0:w, CANAL_ROUGE] = (hsv_image[0:h, 0:w, CANAL_ROUGE] + 10.) // 20 * 20. + 10.
+    hsv_image[0:h, 0:w, CANAL_VERT] =  (hsv_image[0:h, 0:w, CANAL_VERT] + 25.) // 50 * 50.
+    hsv_image[0:h, 0:w, CANAL_BLEU] =  (hsv_image[0:h, 0:w, CANAL_BLEU] + 25.) // 50 * 50.
     rgb_image = cv2.cvtColor(hsv_image, cv2.COLOR_HSV2RGB)
     rgb_image = truncate_bounds(rgb_image)
     image_array = rgb_image
@@ -305,10 +342,12 @@ def popart_one(image_array, hue_delta=15):
     """
     :return: une image avec moins de couleurs. Comme la postérisation mais avec des paramètres différents.
     """
+    h = get_image_height(image_array)
+    w = get_image_width(image_array)
     hsv_image = cv2.cvtColor(image_array, cv2.COLOR_RGB2HSV)
-    hsv_image[:, :, 0] = (hsv_image[:, :, 0] + 10.) // 30 * 30. + hue_delta
-    hsv_image[:, :, 1] = (hsv_image[:, :, 1] + 25.) // 100 * 100. + 50
-    hsv_image[:, :, 2] = (hsv_image[:, :, 2] + 25.) // 100 * 100. + 50
+    hsv_image[0:h, 0:w, CANAL_ROUGE] = (hsv_image[0:h, 0:w, CANAL_ROUGE] + 10.) // 30 * 30. + hue_delta
+    hsv_image[0:h, 0:w, CANAL_VERT] =  (hsv_image[0:h, 0:w, CANAL_VERT] + 25.) // 100 * 100. + 50
+    hsv_image[0:h, 0:w, CANAL_BLEU] =  (hsv_image[0:h, 0:w, CANAL_BLEU] + 25.) // 100 * 100. + 50
     hsv_image = truncate_bounds(hsv_image)
     rgb_image = cv2.cvtColor(hsv_image, cv2.COLOR_HSV2RGB)
     image_array = rgb_image
@@ -320,14 +359,16 @@ def popart(image_array):
     Applique la fonction popart 4 fois avec des paramètres un peu différents
     :return: une image avec moins de couleurs.
     """
-    small_width = image_array.shape[0] // 2
-    small_height = image_array.shape[1] // 2
-    small_image = image_array[:small_width * 2:2, :small_height * 2:2, :]
+    h = get_image_height(image_array)
+    w = get_image_width(image_array)
+    small_height = h // 2
+    small_width = w // 2
+    small_image = image_array[0:small_height * 2:2, 0:small_width * 2:2, CANAUX_RGB]
     new_image = np.zeros(image_array.shape, dtype=image_array.dtype)
     hue_delta = 0
     for i in range(2):
         for j in range(2):
-            new_image[i * small_width:(i + 1) * small_width, j * small_height:(j + 1) * small_height, :] = popart_one(
+            new_image[i * small_height:(i + 1) * small_height, j * small_width:(j + 1) * small_width, CANAUX_RGB] = popart_one(
                 small_image,
                 hue_delta)
             hue_delta += 45
@@ -350,14 +391,17 @@ def extract_contour(image_array, contours=None, use_alpha=True):
         canal = 3
     else:
         canal = 1
-    new_image = image_array[:, :, canal].copy()
+    h = get_image_height(image_array)
+    w = get_image_width(image_array)
+    new_image = image_array[0:h, 0:w, canal].copy()
     cv2.drawContours(new_image, np.array(contours).astype(int), -1, 100, -1)
-    image_array[:, :, canal] = new_image
+    image_array[0:h, 0:w, canal] = new_image
     return image_array
 
 
 def test_contours(image_array):
-    h, w, _ = image_array.shape
+    h = get_image_height(image_array)
+    w = get_image_width(image_array)
     # dessine une étoile jaune d'or
     star_contour = create_star_shape(75, 75, 19, 50)
     color = (255, 197, 25)
@@ -459,19 +503,19 @@ def add_noise(image_array):
     Chaque valeur est choisie aleatoirement avec une forte chance d'etre proche de zero (suivant une loi normale).
     Pour la loi normale, voir par exemple: https://fr.wikipedia.org/wiki/Loi_normale
     """
-    h = image_array.shape[0]
-    w = image_array.shape[1]
+    h = get_image_height(image_array)
+    w = get_image_width(image_array)
     noise = np.random.normal(loc=0, scale=8, size=(h, w))
 
-    inputRed = image_array[:, :, CANAL_ROUGE]
-    inputGreen = image_array[:, :, CANAL_VERT]
-    inputBlue = image_array[:, :, CANAL_BLEU]
+    inputRed = image_array[0:h, 0:w, CANAL_ROUGE]
+    inputGreen = image_array[0:h, 0:w, CANAL_VERT]
+    inputBlue = image_array[0:h, 0:w, CANAL_BLEU]
 
     noisy_image = np.ndarray(image_array.shape, dtype=float)
 
-    noisy_image[:, :, CANAL_ROUGE] = inputRed + noise
-    noisy_image[:, :, CANAL_VERT] = inputGreen + noise
-    noisy_image[:, :, CANAL_BLEU] = inputBlue + noise
+    noisy_image[0:h, 0:w, CANAL_ROUGE] = inputRed + noise
+    noisy_image[0:h, 0:w, CANAL_VERT] = inputGreen + noise
+    noisy_image[0:h, 0:w, CANAL_BLEU] = inputBlue + noise
 
     return truncate_bounds(noisy_image)
 
@@ -489,22 +533,22 @@ def add_vignetting(image_array, spread_factor_h, spread_factor_w):
     :return: l'image avec du vignettage.
     """
 
-    h = image_array.shape[0]
-    w = image_array.shape[1]
+    h = get_image_height(image_array)
+    w = get_image_width(image_array)
 
     gaussian = draw_gaussian(h, w, spread_factor_h * h, spread_factor_w * w)
 
-    inputRed = image_array[:, :, CANAL_ROUGE]
-    inputGreen = image_array[:, :, CANAL_VERT]
-    inputBlue = image_array[:, :, CANAL_BLEU]
+    inputRed = image_array[0:h, 0:w, CANAL_ROUGE]
+    inputGreen = image_array[0:h, 0:w, CANAL_VERT]
+    inputBlue = image_array[0:h, 0:w, CANAL_BLEU]
 
     outputRed = inputRed * gaussian
     outputGreen = inputGreen * gaussian
     outputBlue = inputBlue * gaussian
 
-    image_array[:, :, CANAL_ROUGE] = outputRed
-    image_array[:, :, CANAL_VERT] = outputGreen
-    image_array[:, :, CANAL_BLEU] = outputBlue
+    image_array[0:h, 0:w, CANAL_ROUGE] = outputRed
+    image_array[0:h, 0:w, CANAL_VERT] = outputGreen
+    image_array[0:h, 0:w, CANAL_BLEU] = outputBlue
     truncate_bounds(image_array)
     return image_array
 
@@ -674,19 +718,23 @@ def carrousel_transfo(image_array, ticking=0):
     """
 
     def draw_rect_horiz(im):
-        im[100:150, :, :] = 0
+        w = get_image_width(image_array)
+        im[100:150, 0:w, CANAUX_RGB] = 0
         return im
 
     def draw_rect_horiz2(im):
-        im[120:170, :, CANAL_VERT] = 0
+        w = get_image_width(image_array)
+        im[120:170, 0:w, CANAUX_RGB] = 0
         return im
 
     def draw_rect_vert(im):
-        im[:, 100:150, :] = 255
+        h = get_image_height(image_array)
+        im[0:h, 100:150, CANAUX_RGB] = 255
         return im
 
     def draw_rect_vert2(im):
-        im[:, 120:170, CANAL_VERT] = 255
+        h = get_image_height(image_array)
+        im[0:h, 120:170, CANAL_VERT] = 255
         return im
 
     available_transfos = (
