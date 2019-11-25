@@ -80,9 +80,11 @@ Si tu as des erreurs, il faut peut-être installer la version de développement 
 Le programme a été testé sous Python 3.6. Tu peux créer un environnement spécifique avec Anaconda :
 
     $ conda create -n jecode --file conda_reqs.txt
+    $ conda activate jecode
     $ pip install -r requirements.txt
-    $ source activate jecode
 
+Un bug de caméra a été repéré. Le symptôme : l'image de la vidéo n'est rafraichie qu'une fois toutes les 30 secondes au lieu
+de 30 fois par seconde ! Un 'fix' est fourni [ici](https://github.com/kivy/kivy/issues/5408).
 
 ## Par où commencer ?
 
