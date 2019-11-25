@@ -658,14 +658,17 @@ def paste_image(image_array,
 
     Utilise le canal alpha, ou la couleur `make_transparent` pour coller avec un fond transparent.
     """
+    image_height = image_array.shape[0]
+    image_width = image_array.shape[1]
+
     if fit_height is None and fit_width is None:
         # essaie de déterminer automatiquement comment redimensionner l'image, en hauteur ou en largeur
-        arr_ratio = image_array.shape[0] / image_array.shape[1]
+        arr_ratio = image_height / image_width
         paste_ratio = image_to_paste.shape[0] / image_to_paste.shape[1]
         if arr_ratio < paste_ratio:  # fit en hauteur
-            fit_height = image_array.shape[0] - pos_y
+            fit_height = image_height - pos_y
         else:
-            fit_width = image_array.shape[1] - pos_x
+            fit_width = image_width - pos_x
 
     if fit_height is None:
         new_height = int(fit_width * image_to_paste.shape[0] / image_to_paste.shape[1])
@@ -688,6 +691,25 @@ def paste_image(image_array,
         patch_to_paste = (1 - img_mask) * resized_image + img_mask * old_image_patch
     else:
         patch_to_paste = resized_image
+
+    # retailler patch_to_paste si ça déborde de l'image image_array
+    if pos_y < 0:
+        patch_to_paste = np.delete(patch_to_paste, range(-pos_y), axis=0)
+        pos_y = 0
+        new_height = patch_to_paste.shape[0]
+    if pos_x < 0:
+        patch_to_paste = np.delete(patch_to_paste, range(-pos_x), axis=1)
+        pos_x = 0
+        new_width = patch_to_paste.shape[1]
+
+    if pos_y + new_height > image_height:
+        patch_to_paste = np.delete(patch_to_paste, range(image_height - pos_y, new_height), axis=0)
+    if pos_x + new_width > image_width:
+        patch_to_paste = np.delete(patch_to_paste, range(image_width - pos_x, new_width), axis=1)
+
+    new_height = patch_to_paste.shape[0]
+    new_width = patch_to_paste.shape[1]
+
     image_array[pos_y:pos_y + new_height, pos_x:pos_x + new_width, :] = patch_to_paste
     return image_array
 
@@ -735,6 +757,35 @@ def face_overlay(img, overlay=None, relative_position=0.2, relative_width=1.):
         new_width = int(w * relative_width)
         new_x = x - (new_width - w) // 2
         paste_image(img, overlay, new_x, new_y, fit_width=new_width, make_transparent=(255, 255, 255))
+
+    return img
+
+
+def big_eyes(img, scale=1.6):
+    """
+    Cette fonction utilise la fonction de détection de yeux ouverts d'OpenCV pour les agrandir
+    :param image_array: image avant la transformation
+    :return: image avec les pixels modifiés
+    """
+    datadir = os.path.dirname(cv2.__file__)
+    face_cascade = cv2.CascadeClassifier(datadir + '/data/haarcascade_eye.xml')
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    # applique la fonction qui détecte tous les yeux ouverts dans l'image
+    # chaque "eye" est un rectangle défini par la position du coin haut-gauche (x, y) et sa taille
+    eyes = face_cascade.detectMultiScale(gray, 1.3, 5)
+
+    # On récupère la sous-image de chaque oeil avant de modifier l'image avec les yeux agrandis
+    eye_images = []
+    for x, y, w, h in eyes:
+        eye_images.append((img[y:y + h, x:x + w, CANAUX_RGB], x, y, w, h))
+
+    # On colle dans l'image un agrandissement des yeux
+    for eye, x, y, w, h in eye_images:
+        new_height = int(h * scale)
+        new_y = y - (new_height - h) // 2
+        new_width = int(w * scale)
+        new_x = x - (new_width - w) // 2
+        paste_image(img, eye, new_x, new_y, fit_width=new_width)
 
     return img
 
@@ -793,6 +844,9 @@ def carrousel_transfo(image_array, ticking):
         glasses,
         glasses,
         glasses,
+        big_eyes,
+        big_eyes,
+        big_eyes
     )
 
     function_index = (ticking[0] // 10) % len(available_transfos)
