@@ -310,6 +310,38 @@ def contour(image_array):
     return image_array
 
 
+# Variable utilisée par la fonction 'temporal_difference' pour conserver l'image précédente de la vidéo
+previous_image_array = None
+
+
+def temporal_difference(image_array):
+    """
+    Calcule la différence entre 2 images successives de la vidéo (converties au préalable en niveaux de gris).
+
+    Ça permet notamment de détecter des mouvements dans la vidéo.
+
+    :param image_array: image d'origine
+    :return: la différence (amplifiée) entre l'image courante et l'image précédente
+    """
+
+    # pour accéder et mettre à jour l'image précédente de la vidéo
+    global previous_image_array
+    # On convertit l'image en niveaux de gris, pour que le résultat pique moins les yeux.
+    # Tu peux commenter cette ligne pour voir ce que ça donne sans.
+    image_array = niveaux_de_gris(image_array)
+
+    # La première fois que cette fonction est appelée, on n'a pas encore d'image précédente.
+    if previous_image_array is None:
+        previous_image_array = image_array
+
+    # On applique l'opérateur "valeur absolue" sur la différence des deux images pour ne pas avoir de pixels "négatifs"
+    difference = np.abs(image_array - previous_image_array)
+    # L'image courante 'image_array' servira d'image précédente au prochain appel de cette fonction.
+    previous_image_array = image_array
+    # On amplifie la différence
+    return truncate_bounds(10 * difference)
+
+
 def posterisation(image_array):
     """
     Cette fonction utilise une fonction de la librairie `opencv`(`cv2.cvtColor`)
@@ -707,7 +739,7 @@ def face_overlay(img, overlay=None, relative_position=0.2, relative_width=1.):
     return img
 
 
-def carrousel_transfo(image_array, ticking=0):
+def carrousel_transfo(image_array, ticking):
     """
     Cette fonction permet de boucler sur une liste prédéfinie de fonctions.
 
@@ -754,6 +786,8 @@ def carrousel_transfo(image_array, ticking=0):
         contour,
         popart_one,
         popart,
+        temporal_difference,
+        temporal_difference,
         face_overlay,
         face_overlay,  # keep longer hack
         glasses,
